@@ -7,6 +7,8 @@ use App\Http\Controllers\CommonController;
 use App\Http\Controllers\OurServController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\TestimoniController;
+use App\Http\Controllers\GalleryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +44,7 @@ Route::group([
     Route::post('/tripimage/{id}', [TripController::class, 'addimages']);
     Route::delete('/tripimage/{id}', [TripController::class, 'deleteimg']);
 
+
     Route::get('/trip', [TripController::class, 'getall']);
     Route::put('/trip/{id}', [TripController::class, 'update']);
     Route::delete('/trip/{id}', [TripController::class, 'delete']);
@@ -62,5 +65,15 @@ Route::group([
     Route::post('/team/{id}', [TeamController::class, 'update']);
     Route::delete('/team/{id}', [TeamController::class, 'delete']);
 
+
 });
 
+Route::post('/testimoni', [TestimoniController::class, 'create']);
+Route::get('/testimoni', [TestimoniController::class, 'getall']);
+Route::post('/testimoni/{id}', [TestimoniController::class, 'update']);
+Route::delete('/testimoni/{id}', [TestimoniController::class, 'delete']);
+
+Route::post('/gallery', [GalleryController::class, 'create']);
+Route::get('/gallery', [GalleryController::class, 'getall']);
+Route::post('/gallery/{id}', [GalleryController::class, 'update']);
+Route::delete('/gallery/{id}', [GalleryController::class, 'delete']);
