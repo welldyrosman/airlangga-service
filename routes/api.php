@@ -21,18 +21,27 @@ use App\Http\Controllers\GalleryController;
 |
 */
 
+Route::post('/registerclient', [AuthController::class, 'registerclient']);
+Route::post('/loginclient', [AuthController::class, 'loginclient']);
+Route::post('/login', [AuthController::class, 'login']);
 
 
 
 Route::group([
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
+
 });
 
 Route::group([
-    'middleware' => ['jwt.verify','cors'],
+    'middleware' => ['jwt.verify:userclients','cors:userclients'],
+], function ($router) {
+    Route::get('/trip', [TripController::class, 'getall']);
+});
+
+Route::group([
+    'middleware' => ['jwt.verify:users','cors:users'],
 ], function ($router) {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -45,7 +54,7 @@ Route::group([
     Route::delete('/tripimage/{id}', [TripController::class, 'deleteimg']);
 
 
-    Route::get('/trip', [TripController::class, 'getall']);
+
     Route::put('/trip/{id}', [TripController::class, 'update']);
     Route::delete('/trip/{id}', [TripController::class, 'delete']);
 
@@ -65,15 +74,15 @@ Route::group([
     Route::post('/team/{id}', [TeamController::class, 'update']);
     Route::delete('/team/{id}', [TeamController::class, 'delete']);
 
+    Route::post('/testimoni', [TestimoniController::class, 'create']);
+    Route::get('/testimoni', [TestimoniController::class, 'getall']);
+    Route::post('/testimoni/{id}', [TestimoniController::class, 'update']);
+    Route::delete('/testimoni/{id}', [TestimoniController::class, 'delete']);
 
+    Route::post('/gallery', [GalleryController::class, 'create']);
+    Route::get('/gallery', [GalleryController::class, 'getall']);
+    Route::post('/gallery/{id}', [GalleryController::class, 'update']);
+    Route::delete('/gallery/{id}', [GalleryController::class, 'delete']);
 });
 
-Route::post('/testimoni', [TestimoniController::class, 'create']);
-Route::get('/testimoni', [TestimoniController::class, 'getall']);
-Route::post('/testimoni/{id}', [TestimoniController::class, 'update']);
-Route::delete('/testimoni/{id}', [TestimoniController::class, 'delete']);
 
-Route::post('/gallery', [GalleryController::class, 'create']);
-Route::get('/gallery', [GalleryController::class, 'getall']);
-Route::post('/gallery/{id}', [GalleryController::class, 'update']);
-Route::delete('/gallery/{id}', [GalleryController::class, 'delete']);

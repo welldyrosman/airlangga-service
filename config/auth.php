@@ -45,6 +45,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+        'userclients' => [
+            'driver' => 'jwt',
+            'provider' => 'userclients',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -69,11 +74,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'userclients' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\UserClient::class,
+        ],
     ],
 
     /*
@@ -94,6 +98,12 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'userclients' => [
+            'provider' => 'userclients',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
