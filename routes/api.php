@@ -25,7 +25,7 @@ use App\Http\Controllers\transController;
 
 Route::post('/registerclient', [AuthController::class, 'registerclient']);
 Route::post('/loginclient', [AuthController::class, 'loginclient']);
-Route::post('/login', [AuthController::class, 'login']);
+
 Route::get('/airlanggadata', [ClientController::class, 'getall']);
 
 Route::get('/gettripbyid/{id}', [ClientController::class, 'gettripbyid']);
@@ -35,7 +35,7 @@ Route::group([
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('/register', [AuthController::class, 'register']);
-
+    Route::post('/login', [AuthController::class, 'login']);
 });
 
 Route::group([
