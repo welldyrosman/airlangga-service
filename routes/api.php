@@ -3,12 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\OurServController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TestimoniController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\transController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +26,9 @@ use App\Http\Controllers\GalleryController;
 Route::post('/registerclient', [AuthController::class, 'registerclient']);
 Route::post('/loginclient', [AuthController::class, 'loginclient']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/airlanggadata', [ClientController::class, 'getall']);
 
+Route::get('/gettripbyid/{id}', [ClientController::class, 'gettripbyid']);
 
 
 Route::group([
@@ -38,6 +42,7 @@ Route::group([
     'middleware' => ['jwt.verify:userclients','cors:userclients'],
 ], function ($router) {
     Route::get('/trip', [TripController::class, 'getall']);
+    Route::post('/book',[transController::class,'book']);
 });
 
 Route::group([

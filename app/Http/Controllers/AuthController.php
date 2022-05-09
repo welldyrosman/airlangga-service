@@ -108,23 +108,24 @@ class AuthController extends Controller
     }
 
     public function registerclient(Request $request) {
+
+        $error ="";
         try{
 
-
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string|between:2,100|unique:userclients',
-            'firstname' => 'required|string|between:2,100',
-            'lastname' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:userclients',
-            'password' => ['required','confirmed',Password::min(8)->letters()->numbers()],
-            'phone' => 'required|max:13',
-            'city' => 'required',
-            'province' => 'required',
-        ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
+            $validator=Validator::make($request->all(),[
+                'username' => 'required|string|between:2,100|unique:members',
+                'firstname' => 'required|string|between:2,100',
+                'lastname' => 'required|string|between:2,100',
+                'email' => 'required|string|email|max:100|unique:members',
+                'password' => ['required','confirmed',Password::min(8)->letters()->numbers()],
+                'phone' => 'required|max:13',
+                'city' => 'required',
+                'province' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $error = $validator->errors()->first();
+                throw new Exception($error);
+             }
         // if ($request->password != $request->repassword){
         //     throw new Exception('Password are not the same');
         // }
@@ -139,11 +140,10 @@ class AuthController extends Controller
         // }
 
         $user = UserClient::create(array_merge(
-                    $validator->validated(),
+                   $validator->validated(),
                     ['password' => bcrypt($request->password),
                     ],
                 ));
-
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
@@ -155,44 +155,41 @@ class AuthController extends Controller
     }
 
     public function loginclient(Request $request){
-        $credentials = $request->only('username', 'password');
 
-        try {
-            if (! $token = auth('userclients')->attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
+        try{
+            $validator=Validator::make($request->all(),[
+                "username"=>"required",
+                "password"=>"required",
+            ]);
+            if ($validator->fails()) {
+                $error = $validator->errors()->first();
+                throw new Exception($error);
+             }
+            $credentials = $request->only('username', 'password');
+
+            try {
+                if (! $token = Auth('userclients')->attempt($credentials)) {
+                    throw new Exception("Cannot Found Account");
+                }
+            } catch (JWTException $e) {
+                throw new Exception("Could Not Create Token");
             }
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            $data = Auth::guard('userclients')->user();
+            $data->token=$token;
+            $user=[
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => JWTAuth::factory()->getTTL() * 60,
+                'user' => $data
+            ];
+            return response()->json($user);
         }
-        $data = Auth::guard('userclients')->user();
-        $data->token=$token;
-        $user=[
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60,
-            'user' => $data
-        ];
-        return response()->json($user);
+        catch(Exception $e){
+            return Tool::MyResponse(false,"ERROR",$e->getMessage(),$e->getCode()?$e->getCode():400);
+        }
     }
-
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function logout() {
-        auth()->logout();
-
-        return response()->json(['message' => 'User successfully signed out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function refresh() {
-        return $this->createNewToken(auth()->refresh());
+        return $this->createNewToken(Auth::refresh());
     }
 
     /**
@@ -215,7 +212,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
+            'expires_in' => Auth::factory()->getTTL() * 60,
             'user' => auth()->user()
         ]);
     }

@@ -31,7 +31,7 @@ class UserClient extends Authenticatable implements JWTSubject
         'phone'
     ];
 
-    protected $table = 'userclients';
+    protected $table = 'members';
 
     /**
      * The attributes that should be hidden for arrays.
